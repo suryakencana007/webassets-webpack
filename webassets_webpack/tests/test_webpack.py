@@ -21,5 +21,5 @@ class WebpackFilterTestCase(TempEnvironmentHelper, TestCase):
     def test_webpack_filter(self):
         self.mkbundle('main.js', filters='webpack',
                       output='bundle.js').build()
-        self.get('bundle.js')
-        # assert "var x = function x" in self.get('bundle.js')
+      
+        assert "var x = function x" in self.get('bundle.js')

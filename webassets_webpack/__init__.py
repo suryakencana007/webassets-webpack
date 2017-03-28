@@ -40,6 +40,6 @@ class Webpack(ExternalTool):
         args = [self.binary or 'webpack']
 
         if self.config:
-            args.extend(('--config', self.config))
+            args.extend(['--config', self.config])
 
-            return self.subprocess(args, out, _in)
+        return self.subprocess(args, out, _in)
