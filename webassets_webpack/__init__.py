@@ -44,7 +44,27 @@ class Webpack(ExternalTool):
     def open(self, out, source_path, **kw):
         log.info(source_path)
 
-    def input(self, _in, out, **kw):
+    # def input(self, _in, out, **kw):
+    #     args = [self.binary or 'webpack']
+    #
+    #     filename = 'main.js'
+    #
+    #     if self.config:
+    #         args.extend(['--config', self.config])
+    #
+    #     if self.file_name:
+    #         filename = self.file_name
+    #
+    #     path = kw['output_path'].split('/')
+    #     _filename = path.pop(-1)
+    #     path = '/'.join(path)
+    #     # args.extend(['--entry', kw['source_path']])
+    #     args.extend(['--output-path', path])
+    #     args.extend(['--output-filename', filename])
+    #
+    #     self.subprocess(args, out, _in)
+
+    def output(self, _in, out, **kw):
         args = [self.binary or 'webpack']
 
         filename = 'main.js'
@@ -61,17 +81,5 @@ class Webpack(ExternalTool):
         # args.extend(['--entry', kw['source_path']])
         args.extend(['--output-path', path])
         args.extend(['--output-filename', filename])
-
-        self.subprocess(args, out, _in)
-
-    # def output(self, _in, out, **kwargs):
-    #     args = [self.binary or 'webpack']
-    #
-    #     if self.config:
-    #         args.extend(['--config', self.config])
-    #
-    #     args.extend(['--entry', kwargs['source_path']])
-    #     args.extend(
-    #         ['--output-path', kwargs['output_path']])
 
         self.subprocess(args, out, _in)
