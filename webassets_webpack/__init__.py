@@ -1,6 +1,10 @@
 from webassets.filter import ExternalTool, option
 
+import logging
+
 __all__ = ['Webpack']
+
+log = logging.getLogger(__name__)
 
 
 class Webpack(ExternalTool):
@@ -41,5 +45,7 @@ class Webpack(ExternalTool):
 
         if self.config:
             args.extend(['--config', self.config])
+
+        log.debug(args)
 
         return self.subprocess(args, out, _in)
