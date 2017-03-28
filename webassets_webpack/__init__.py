@@ -31,6 +31,7 @@ class Webpack(ExternalTool):
     options = {
         'binary': 'WEBPACK_BIN',
         'config': 'WEBPACK_CONFIG',
+        'file_name': 'WEBPACK_OUTFILE',
         'run_in_debug': 'WEBPACK_RUN_IN_DEBUG',
     }
 
@@ -46,18 +47,31 @@ class Webpack(ExternalTool):
     def input(self, _in, out, **kw):
         args = [self.binary or 'webpack']
 
+        filename = 'main.js'
+
         if self.config:
             args.extend(['--config', self.config])
 
-        # args.extend(['--output-path', '{output}'])
+        if self.file_name:
+            filename = self.file_name
+
+        path = kw['output_path'].split('/')
+        _filename = path.pop(-1)
+        path = '/'.join(path)
+        # args.extend(['--entry', kw['source_path']])
+        args.extend(['--output-path', path])
+        args.extend(['--output-filename', filename])
 
         self.subprocess(args, out, _in)
 
-    def output(self, _in, out, **kwargs):
-        args = [self.binary or 'webpack']
-
-        if self.config:
-            args.extend(['--config', self.config])
-        args.extend(['--entry', '{input}', '--output-path', '{output}'])
+    # def output(self, _in, out, **kwargs):
+    #     args = [self.binary or 'webpack']
+    #
+    #     if self.config:
+    #         args.extend(['--config', self.config])
+    #
+    #     args.extend(['--entry', kwargs['source_path']])
+    #     args.extend(
+    #         ['--output-path', kwargs['output_path']])
 
         self.subprocess(args, out, _in)
