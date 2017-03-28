@@ -35,6 +35,10 @@ class Webpack(ExternalTool):
         'run_in_debug': 'WEBPACK_RUN_IN_DEBUG',
     }
 
+    def __init__(self):
+        super(Webpack, self).__init__()
+        self.path = ''
+
     def setup(self):
         super(Webpack, self).setup()
         if self.run_in_debug is False:
@@ -75,11 +79,19 @@ class Webpack(ExternalTool):
         if self.file_name:
             filename = self.file_name
 
-        path = kw['output_path'].split('/')
-        _filename = path.pop(-1)
-        path = '/'.join(path)
+        self.path = kw['output_path'].split('/')
+        _filename = self.path.pop(-1)
+        self.path = '/'.join(self.path)
         # args.extend(['--entry', kw['source_path']])
-        args.extend(['--output-path', path])
+        args.extend(['--output-path', self.path])
         args.extend(['--output-filename', filename])
 
+        log.info('{0}/{1}'.format(self.path, filename))
+
         self.subprocess(args, out, _in)
+
+    def subprocess(self, argv, out, data=None):
+        ExternalTool.subprocess(argv, out, data)
+
+        with open('{0}/{1}'.format(self.path, self.file_name), 'r') as f:
+            out.write(f.read())
