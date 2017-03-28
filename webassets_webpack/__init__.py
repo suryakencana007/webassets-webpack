@@ -94,4 +94,7 @@ class Webpack(ExternalTool):
         ExternalTool.subprocess(argv, out, data)
 
         with open('{0}/{1}'.format(self.path, self.file_name), 'r+') as f:
+            out.tell()
+            out.seek(0)
+            out.truncate(0)
             out.write(f.read())
