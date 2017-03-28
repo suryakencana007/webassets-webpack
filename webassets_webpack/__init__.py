@@ -40,12 +40,24 @@ class Webpack(ExternalTool):
             # Disable running in debug mode for this instance
             self.max_debug_level = False
 
+    def open(self, out, source_path, **kw):
+        log.info(source_path)
+
     def input(self, _in, out, **kw):
         args = [self.binary or 'webpack']
 
         if self.config:
             args.extend(['--config', self.config])
 
-        log.debug(args)
+        # args.extend(['--output-path', '{output}'])
 
-        return self.subprocess(args, out, _in)
+        self.subprocess(args, out, _in)
+
+    def output(self, _in, out, **kwargs):
+        args = [self.binary or 'webpack']
+
+        if self.config:
+            args.extend(['--config', self.config])
+        args.extend(['--entry', '{input}', '--output-path', '{output}'])
+
+        self.subprocess(args, out, _in)
