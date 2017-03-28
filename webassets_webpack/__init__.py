@@ -1,5 +1,5 @@
 from webassets.filter import ExternalTool, option
-
+import os
 import logging
 
 __all__ = ['Webpack']
@@ -98,3 +98,5 @@ class Webpack(ExternalTool):
             out.seek(0)
             out.truncate(0)
             out.write(f.read())
+
+        os.remove('{0}/{1}'.format(self.path, self.file_name))
