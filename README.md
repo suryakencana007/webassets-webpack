@@ -32,7 +32,7 @@ register('js_all', js)
 
 ##### WEBPACK_BIN
 
-he path to the Webpack binary. If not set, assumes ``Webpack`` is in the system path.
+The path to the Webpack binary. If not set, assumes ``Webpack`` is in the system path.
 
 ##### WEBPACK_CONFIG
 
