@@ -89,4 +89,3 @@ ENV/
 .ropeproject
 .idea/
 *node_modules/
-package.json
