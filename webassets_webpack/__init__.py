@@ -31,7 +31,7 @@ class Webpack(ExternalTool):
     options = {
         'binary': 'WEBPACK_BIN',
         'config': 'WEBPACK_CONFIG',
-        'file_name': 'WEBPACK_OUTFILE',
+        'temp_file': 'WEBPACK_TEMP',
         'run_in_debug': 'WEBPACK_RUN_IN_DEBUG',
     }
 
@@ -48,55 +48,35 @@ class Webpack(ExternalTool):
     def open(self, out, source_path, **kw):
         log.info(source_path)
 
-    # def input(self, _in, out, **kw):
-    #     args = [self.binary or 'webpack']
-    #
-    #     filename = 'main.js'
-    #
-    #     if self.config:
-    #         args.extend(['--config', self.config])
-    #
-    #     if self.file_name:
-    #         filename = self.file_name
-    #
-    #     path = kw['output_path'].split('/')
-    #     _filename = path.pop(-1)
-    #     path = '/'.join(path)
-    #     # args.extend(['--entry', kw['source_path']])
-    #     args.extend(['--output-path', path])
-    #     args.extend(['--output-filename', filename])
-    #
-    #     self.subprocess(args, out, _in)
-
     def output(self, _in, out, **kw):
         args = [self.binary or 'webpack']
 
-        filename = 'main.js'
+        filename = 'temp.js'
 
         if self.config:
             args.extend(['--config', self.config])
 
-        if self.file_name:
-            filename = self.file_name
+        if self.temp_file:
+            filename = self.temp_file
 
         self.path = kw['output_path'].split('/')
-        _filename = self.path.pop(-1)
+        self.path.pop(-1)
         self.path = '/'.join(self.path)
         # args.extend(['--entry', kw['source_path']])
         args.extend(['--output-path', self.path])
         args.extend(['--output-filename', filename])
 
-        log.info('{0}/{1}'.format(self.path, filename))
+        log.debug('{0}/{1}'.format(self.path, filename))
 
         self.subprocess(args, out, _in)
 
     def subprocess(self, argv, out, data=None):
         ExternalTool.subprocess(argv, out, data)
 
-        with open('{0}/{1}'.format(self.path, self.file_name), 'r+') as f:
+        with open('{0}/{1}'.format(self.path, self.temp_file), 'r+') as f:
             out.tell()
             out.seek(0)
             out.truncate(0)
             out.write(f.read())
 
-        os.remove('{0}/{1}'.format(self.path, self.file_name))
+        os.remove('{0}/{1}'.format(self.path, self.temp_file))

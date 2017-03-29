@@ -36,7 +36,7 @@ class WebpackFilterTestCase(TempEnvironmentHelper, TestCase):
     def test_webpack_filter(self):
         self.env.config['WEBPACK_BIN'] = './node_modules/.bin/webpack'
         self.env.config['WEBPACK_CONFIG'] = './webpack.config.js'
-        self.env.config['WEBPACK_OUTFILE'] = 'debug.js'
+        self.env.config['WEBPACK_TEMP'] = 'temp.js'
 
         # if not find_executable('webpack'):
         #     raise SkipTest()
