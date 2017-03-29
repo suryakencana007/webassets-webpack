@@ -3,6 +3,10 @@
 Webpack filter for webassets
 -------------------------------
 
+.. image:: https://travis-ci.org/suryakencana/webassets-webpack.svg?branch=master
+    :target: https://travis-ci.org/suryakencana/webassets-webpack
+
+
 Filter for for compiling assets using `Webpack <https://webpack.js.org>`_ and
 `webassets <http://webassets.readthedocs.org>`_.
 
