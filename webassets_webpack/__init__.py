@@ -73,7 +73,8 @@ class Webpack(ExternalTool):
     def subprocess(self, argv, out, data=None):
         ExternalTool.subprocess(argv, out, data)
 
-        with open('{0}/{1}'.format(self.path, self.temp_file), 'r+') as f:
+        with open('{0}/{1}'.format(self.path, self.temp_file),
+                  'r+', encoding='UTF-8') as f:
             out.tell()
             out.seek(0)
             out.truncate(0)
