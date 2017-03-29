@@ -1,10 +1,14 @@
 from webassets.filter import ExternalTool, option
+import sys
 import os
 import logging
 
 __all__ = ['Webpack']
 
 log = logging.getLogger(__name__)
+
+# True if we are running on Python 3.
+PY3 = sys.version_info[0] == 3
 
 
 class Webpack(ExternalTool):
@@ -74,10 +78,13 @@ class Webpack(ExternalTool):
         ExternalTool.subprocess(argv, out, data)
 
         with open('{0}/{1}'.format(self.path, self.temp_file),
-                  'r+', encoding='UTF-8') as f:
+                  mode='r+') as f:
             out.tell()
             out.seek(0)
             out.truncate(0)
-            out.write(f.read())
+            if PY3:
+                out.write(f.read())
+            else:
+                out.write(f.read().decode('utf-8'))
 
         os.remove('{0}/{1}'.format(self.path, self.temp_file))
