@@ -1,4 +1,4 @@
-language: python, node_js
+language: python
 
 python:
   - "2.7"
@@ -6,14 +6,15 @@ python:
   - "3.4"
   - "3.5"
 
-node_js:
-  - "4"
+env:
+  - TRAVIS_NODE_VERSION="4"
 
 install:
   - pip install pep8
   - npm install
 
 script:
+  - npm test
   - pep8 --verbose webassets_webpack
   - make test
 
