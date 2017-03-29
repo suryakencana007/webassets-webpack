@@ -6,6 +6,9 @@ python:
   - "3.4"
   - "3.5"
 
+node_js:
+  - "4"
+
 install:
   - pip install pep8
   - npm install
