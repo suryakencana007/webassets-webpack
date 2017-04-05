@@ -90,3 +90,4 @@ ENV2/
 .ropeproject
 .idea/
 *node_modules/
+/env2/

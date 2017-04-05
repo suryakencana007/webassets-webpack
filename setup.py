@@ -43,10 +43,11 @@ from setuptools import setup, find_packages
 
 
 setup(name='webassets-webpack',
-      version='0.1.0',
+      version='0.1.3',
       description='Webpack filter for webassets',
       long_description=__doc__,
       author='Nanang Suryadi',
+      author_email='nanang.jobs@gmail.com',
       license='MIT',
       url='https://github.com/suryakencana/webassets-webpack',
       download_url='https://github.com/suryakencana/webassets-webpack/archive/0.1.0.tar.gz',
