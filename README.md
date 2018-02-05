@@ -3,6 +3,11 @@
 
 Filter for for compiling assets using [Webpack](ttps://webpack.js.org) and [webassets](http://webassets.readthedocs.org). Requires Python 2.7 or Python 3.3 and newer.
 
+## Installation
+```bash
+pip install webassets_webpack
+```
+
 ## Basic usage
 
 ```python
