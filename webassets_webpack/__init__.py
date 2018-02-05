@@ -1,7 +1,8 @@
-from webassets.filter import ExternalTool, option
-import sys
-import os
+from tempfile import NamedTemporaryFile
 import logging
+import sys
+
+from webassets.filter import ExternalTool
 
 __all__ = ['Webpack']
 
@@ -12,22 +13,23 @@ PY3 = sys.version_info[0] == 3
 
 
 class Webpack(ExternalTool):
-    """Use Webpack to bundle assets.
+    """
+    Use Webpack to bundle assets.
 
-        Requires the Webpack executable to be available externally. You can
-        install it using `Node Package Manager <http://npmjs.org/>`_::
+    Requires the Webpack executable to be available externally. You can
+    install it using `Node Package Manager <http://npmjs.org/>`_::
 
-        $ npm install webpack --save-dev
+    $ npm install webpack --save-dev
 
-        Supported configuration options:
+    Supported configuration options:
 
-        WEBPACK_BIN
-        The path to the Webpack binary. If not set, assumes ``Webpack``
-        is in the system path.
+    WEBPACK_BIN
+    The path to the Webpack binary. If not set, assumes ``Webpack``
+    is in the system path.
 
-        WEBPACK_CONFIG
-        Passed straight through to ``webpack --config``
-        to specify which webpack config to use
+    WEBPACK_CONFIG
+    Passed straight through to ``webpack --config``
+    to specify which webpack config to use
     """
 
     name = 'webpack'
@@ -35,7 +37,6 @@ class Webpack(ExternalTool):
     options = {
         'binary': 'WEBPACK_BIN',
         'config': 'WEBPACK_CONFIG',
-        'temp_file': 'WEBPACK_TEMP',
         'run_in_debug': 'WEBPACK_RUN_IN_DEBUG',
     }
 
@@ -55,36 +56,25 @@ class Webpack(ExternalTool):
     def output(self, _in, out, **kw):
         args = [self.binary or 'webpack']
 
-        filename = 'temp.js'
-
         if self.config:
             args.extend(['--config', self.config])
 
-        if self.temp_file:
-            filename = self.temp_file
+        with NamedTemporaryFile("r", suffix=".js") as temp_file:
 
-        self.path = kw['output_path'].split('/')
-        self.path.pop(-1)
-        self.path = '/'.join(self.path)
-        # args.extend(['--entry', kw['source_path']])
-        args.extend(['--output-path', self.path])
-        args.extend(['--output-filename', filename])
+            self.path = kw['output_path'].split('/')
+            self.path.pop(-1)
 
-        log.debug('{0}/{1}'.format(self.path, filename))
+            self.path = '/'.join(self.path)
+            # args.extend(['--entry', kw['source_path']])
+            args.extend(['--output-path', self.path])
+            args.extend(['--output-filename', temp_file])
 
-        self.subprocess(args, out, _in)
+            log.debug(temp_file.name)
 
-    def subprocess(self, argv, out, data=None):
-        ExternalTool.subprocess(argv, out, data)
-
-        with open('{0}/{1}'.format(self.path, self.temp_file),
-                  mode='r+') as f:
             out.tell()
             out.seek(0)
             out.truncate(0)
             if PY3:
-                out.write(f.read())
+                out.write(temp_file.read())
             else:
-                out.write(f.read().decode('utf-8'))
-
-        os.remove('{0}/{1}'.format(self.path, self.temp_file))
+                out.write(temp_file.read().decode('utf-8'))
