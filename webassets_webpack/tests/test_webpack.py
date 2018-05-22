@@ -26,4 +26,7 @@ class WebpackFilterTestCase(TempEnvironmentHelper, TestCase):
 
         self.mkbundle('main.js', filters='webpack',
                       output='bundle.js').build()
-        print(self.get('bundle.js'))
+        # print(self.get('bundle.js'))
+
+        with open("bundle-read.js","w+") as read_file:
+            read_file.write(self.get('bundle.js'))

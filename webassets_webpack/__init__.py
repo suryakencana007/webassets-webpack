@@ -53,10 +53,10 @@ class Webpack(ExternalTool):
         'run_in_debug': 'WEBPACK_RUN_IN_DEBUG',
     }
 
-    def input(self, _in, out, **kw):
+    def output(self, _in, out, **kw):
         # create a temp file
-        tmp = NamedTemporaryFile(suffix='.js', delete=False)
-        tmp.close()  # close it so windows can read it
+        self.temp_file = NamedTemporaryFile(suffix='.js', delete=False)
+        self.temp_file.close()  # close it so windows can read it
 
         print(kw)
         # create temp file
@@ -67,7 +67,7 @@ class Webpack(ExternalTool):
         self.path = self.path.pop(-1)
         # self.path = '/'.join(self.path)
         
-        _tmp = tmp.name.split('/')
+        _tmp = self.temp_file.name.split('/')
         tmp_filename = _tmp.pop(-1)
         _tmp = '/'.join(_tmp)
 
@@ -76,9 +76,14 @@ class Webpack(ExternalTool):
 
         self.subprocess(args, out, _in)
 
-        # read the temp file
-        cat_or_type = 'type' if platform == 'win32' else 'cat'
-        read_args = [cat_or_type, tmp.name]
-        self.subprocess(read_args, out)
+        with open(self.temp_file.name,
+                  mode='r+') as f:
+            out.tell()
+            out.seek(0)
+            out.truncate(0)
+            if PY3:
+                out.write(f.read())
+            else:
+                out.write(f.read().decode('utf-8'))
 
-        os.remove(tmp.name)
+        os.remove(self.temp_file.name)
