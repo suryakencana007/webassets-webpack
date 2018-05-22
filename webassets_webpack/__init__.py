@@ -1,6 +1,8 @@
-from tempfile import NamedTemporaryFile
+from contextlib import contextmanager
+from tempfile import NamedTemporaryFile, TemporaryFile
 import logging
-import sys
+from sys import version_info, platform
+import os
 
 from webassets.filter import ExternalTool
 
@@ -9,7 +11,18 @@ __all__ = ['Webpack']
 log = logging.getLogger(__name__)
 
 # True if we are running on Python 3.
-PY3 = sys.version_info[0] == 3
+PY3 = version_info[0] == 3
+
+
+@contextmanager
+def excursion(directory):
+    """Context-manager that temporarily changes to a new working directory."""
+    old_dir = os.getcwd()
+    try:
+        os.chdir(directory)
+        yield
+    finally:
+        os.chdir(old_dir)
 
 
 class Webpack(ExternalTool):
@@ -40,41 +53,32 @@ class Webpack(ExternalTool):
         'run_in_debug': 'WEBPACK_RUN_IN_DEBUG',
     }
 
-    def __init__(self):
-        super(Webpack, self).__init__()
-        self.path = ''
+    def input(self, _in, out, **kw):
+        # create a temp file
+        tmp = NamedTemporaryFile(suffix='.js', delete=False)
+        tmp.close()  # close it so windows can read it
 
-    def setup(self):
-        super(Webpack, self).setup()
-        if self.run_in_debug is False:
-            # Disable running in debug mode for this instance
-            self.max_debug_level = False
-
-    def open(self, out, source_path, **kw):
-        log.info(source_path)
-
-    def output(self, _in, out, **kw):
+        print(kw)
+        # create temp file
         args = [self.binary or 'webpack']
+        args.extend(['--config', self.config or './webpack.config.js'])
 
-        if self.config:
-            args.extend(['--config', self.config])
+        self.path = kw['output_path'].split('/')
+        self.path = self.path.pop(-1)
+        # self.path = '/'.join(self.path)
+        
+        _tmp = tmp.name.split('/')
+        tmp_filename = _tmp.pop(-1)
+        _tmp = '/'.join(_tmp)
 
-        with NamedTemporaryFile("r", suffix=".js") as temp_file:
+        args.extend(['--output-path', _tmp])
+        args.extend(['--output-filename', tmp_filename])
 
-            self.path = kw['output_path'].split('/')
-            self.path.pop(-1)
+        self.subprocess(args, out, _in)
 
-            self.path = '/'.join(self.path)
-            # args.extend(['--entry', kw['source_path']])
-            args.extend(['--output-path', self.path])
-            args.extend(['--output-filename', temp_file])
+        # read the temp file
+        cat_or_type = 'type' if platform == 'win32' else 'cat'
+        read_args = [cat_or_type, tmp.name]
+        self.subprocess(read_args, out)
 
-            log.debug(temp_file.name)
-
-            out.tell()
-            out.seek(0)
-            out.truncate(0)
-            if PY3:
-                out.write(temp_file.read())
-            else:
-                out.write(temp_file.read().decode('utf-8'))
+        os.remove(tmp.name)

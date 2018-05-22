@@ -91,3 +91,6 @@ ENV2/
 .idea/
 *node_modules/
 /env2/
+
+Pipfile.lock
+yarn.lock

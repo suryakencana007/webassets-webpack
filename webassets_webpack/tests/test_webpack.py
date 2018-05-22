@@ -26,3 +26,4 @@ class WebpackFilterTestCase(TempEnvironmentHelper, TestCase):
 
         self.mkbundle('main.js', filters='webpack',
                       output='bundle.js').build()
+        print(self.get('bundle.js'))
