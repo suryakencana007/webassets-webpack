@@ -43,7 +43,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='webassets-webpack',
-      version='0.1.4',
+      version='0.1.5',
       description='Webpack filter for webassets',
       long_description=__doc__,
       author='Nanang Suryadi',
